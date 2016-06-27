@@ -2,8 +2,9 @@
 Monitor your server performance in real-time. Easy to setup and to use.
 
 # Requirements
-Node.js 
-npm
+
+* Node.js
+* npm
 
 # How to run
 First, you need to install all modules
