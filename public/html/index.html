@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Monitor</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/skeleton.css">
+    <script src="js/raphael-2.1.4.min.js"></script>
+    <script src="js/justgage.js"></script>
+    <script src="js/jquery-3.0.0.min.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="four columns">
+          <header>
+          	Time &amp; date
+          </header>
+          <h4>Local Time</h4>
+          <h4 id="localtime"></h4>
+          <hr>
+           <h4>Uptime</h4>
+          <h4 id="uptime"></h4>
+        </div>
+        <div class="four columns">
+          <header>Harddrive</header>
+          <div id="harddrives"></div>
+
+
+        </div>
+        <div class="four columns">
+          <header>Performance</header>
+          <div id="ram"></div>
+          <div id="cpus">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/socket.js"></script>
+
+  </body>
+</html>
