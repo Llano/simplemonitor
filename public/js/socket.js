@@ -1,159 +1,196 @@
-var socket = io();
-var uptimeElement = document.getElementById("uptime");
-var maxRam = 0;
-var cpuGuages = [];
-var cpus = [];
-var disks = [];
-var meterElements = [];
+var Monitor = React.createClass({
+    getInitialState: function() {
+        return {uptime: 0, totalMem: 0, freeMem: 0, cpus: null, drives: null, localTime: null};
+    },
+    componentWillMount: function() {
+        var socket = io.connect()
+        socket.on('finalstatus', this._finalStatusReceived);
+        socket.on('tmpstatus', this._tempStatusReceived);
+    },
 
+    _finalStatusReceived: function(message) {
+        this.setState({uptime: message.upTime, totalMem: message.totalMem, localTime: message.localTime})
+    },
+    _tempStatusReceived: function(message) {
+        this.setState({freeMem: message.freeMem, cpus: message.cores, drives: message.disks})
+    },
+    render: function() {
+        var cpu, ram, date, drives;
+        if(this.state.cpus != null)
+        {
+            cpu = <Cpu cores={this.state.cpus}/>;
+            ram = <Ram totalMem={this.state.totalMem} freeMem={this.state.freeMem}/>
+            date = <TimeDate uptime={this.state.uptime} localTime={this.state.localTime}/>;
+            drives = <Drives drives={this.state.drives}/>
 
-var ramGauge = new JustGage({
-    id: "ram",
-    value: 0,
-    min: 0,
-    max: 100,
-    title: "RAM usage",
-    gaugeWidthScale: 0.2,
-    valueFontColor: "#A9A9A9",
-    relativeGaugeSize: true,
-    symbol: " Mb"
+        }
+        return (
+            <div>
+                <div className="row">
+                    <div className="five columns">
+                        <div className="box">
+                            {drives}
+                        </div>
+                    </div>
+
+                    <div className="four columns">
+                        <div className="box">
+                            {date}
+                        </div>
+                    </div>
+                    <div className="three columns">
+                        <div className="box">
+                            <div id="ram">
+                                {ram}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="five columns">
+                        <div className="box">
+                            <div id="cpuNode">
+                                {cpu}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="three columns">
+                        <div className="box">
+
+                        </div>
+                    </div>
+                    <div className="four columns">
+                        <div className="box">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        );
+    }
 });
 
 
-socket.on('finalstatus', function(msg){
-    startTick(msg);
-    setMaxRamValue(Math.floor(msg.totalMem / 1024 / 1024));
-    var cpusElement = document.getElementById('cpus');
-    for(i = 0; i < msg.cpuCount; i++) {
-        var element = document.createElement('div');
-        element.setAttribute("id", "cpu" + i);
-        cpusElement.appendChild(element);
-        cpuGuages.push(
-            new JustGage({
-                id: "cpu" + i,
+var TimeDate = React.createClass({
+    getInitialState: function() {
+        return {uptime: 0, localTime: 0};
+    },
+    componentDidMount: function() {
+        this.setState({uptime: this.props.uptime, localTime: this.props.localTime});
+        setInterval(() => {
+            this.tick();
+        }, 1000);
+    },
+    tick: function() {
+        this.setState({
+            uptime: this.state.uptime + 1,
+            localTime: this.state.localTime + 1
+        });
+    },
+    render: function() {
+        var d = new Date(this.state.uptime * 1000);
+        var local = new Date(this.state.localTime * 1000);
+        local.setUTCHours(2);
+        return (
+            <div id="DateBox">
+                <div className="title">Uptime</div>
+                <div className="time">{d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()}</div>
+                <div className="title">Local Time</div>
+                <div className="time">{local.toISOString().slice(11, 19)}</div>
+            </div>
+        );
+    }
+});
+
+var Ram = React.createClass({
+    getInitialState: function() {
+        return {gauge: null};
+    },
+    componentDidMount: function() {
+        var g = new JustGage({
+            id: "ram",
+            value: 0,
+            min: 0,
+            max: 100,
+            title: "RAM",
+            gaugeWidthScale: 0.2,
+            relativeGaugeSize: true,
+            valueFontColor: "#A9A9A9",
+            symbol: "MB"
+        });
+        this.setState({gauge: g});
+    },
+    componentWillReceiveProps: function(nextProps) {
+        this.state.gauge.refresh(0, Math.floor(nextProps.totalMem / 1024 / 1024));
+        this.state.gauge.refresh(Math.floor((nextProps.totalMem - nextProps.freeMem) / 1024 / 1024));
+    },
+    render: function() {
+
+        return (null);
+    }
+});
+
+var Cpu = React.createClass({
+    getInitialState: function() {
+        return {gauges: [], cores: []};
+    },
+    componentWillReceiveProps: function(nextProps) {
+        this.setState({cores: nextProps.cores});
+        for (var i = 0; i < nextProps.cores.length; i++) {
+            this.state.gauges[i].refresh(nextProps.cores[i] * 100);
+        }
+    },
+    componentDidMount: function() {
+        var arr = [];
+        for(var i = 0; i < this.props.cores.length; i++) {
+            var g = new JustGage({
+                parentNode: document.getElementById("cpuNode"),
                 value: 0,
                 min: 0,
                 max: 100,
-                title: "Cpu #" + (i + 1),
+                title: "CPU " + (i + 1),
                 gaugeWidthScale: 0.2,
                 valueFontColor: "#A9A9A9",
                 relativeGaugeSize: true,
                 decimals: 2,
                 symbol: "%"
-            })
+            });
 
+            arr[i] = g;
+        }
+        this.setState({gauges: arr});
+
+
+    },
+    render: function() {
+        return (
+            null
         );
     }
+})
 
-
-
-
+var Drives = React.createClass({
+    MBTOGB: function(mb) {
+        return (mb / (1024*1024*1024)).toFixed(2);
+    },
+    render: function() {
+        return (
+            <div>
+            {
+                this.props.drives.map((drive, i) => {
+                    return (
+                        <div key={i}>
+                            <span className="left">{this.props.drives[i].drive}</span>
+                            <span className="right">{this.MBTOGB(this.props.drives[i].available) + "GB free out of " + this.MBTOGB(this.props.drives[i].total) + " GB"}</span>
+                            <meter max="100" value={this.props.drives[i].usedPer}></meter>
+                        </div>
+                    );
+                })
+            }
+            </div>
+        );
+    }
 });
 
-socket.on('tmpstatus', function(msg){
-    handleTempData(msg);
-});
-
-
-function handleTempData(msg) {
-    setRamValue(maxRam - Math.floor(msg.freeMem));
-    if(cpus.length > 0) {
-        for(i = 0; i < msg.cores.length; i++) {
-            cpuGuages[i].refresh((calculateCpuUsage(msg.cores[i], cpus[i]) * 100).toFixed(2));
-        }
-    }
-    for(j = 0; j < msg.disks.length; j++) {
-        if(!diskExist(msg.disks[j], disks)) {
-            disks.push(msg.disks[j]);
-            var element = $('<span>' + msg.disks[j].drive + ' (' + msg.disks[j].mountpoint + ')' + '</span><meter id="disk' + j + '" max="100"></meter>');
-            $('#harddrives').append(element);
-            meterElements.push(element);
-
-        }
-        else {
-            //meterElements[i].val(msg.disks[i].usedPer);
-            meterElements[j].animate({value: msg.disks[j].usedPer}, 'slow');
-        }
-
-
-    }
-    for(k = 0; k < disks.length; k++) {
-      if(!diskExist(disks[k], msg.disks)) {
-          meterElements[k].remove();
-          meterElements.splice(k, 1);
-          disks.splice(k, 1);
-
-      }
-    }
-
-
-    cpus = msg.cores;
-}
-
-
-
-
-function startTick(msg) {
-    var uptime = new Date(msg.upTime * 1000);
-    var numdays = Math.floor((uptime / 86400) / 1000);
-    var localtime = new Date(msg.localTime);
-    setInterval(function() {
-        $('#uptime').html(numdays + " days <br>" + uptime.getHours() + " hours <br>"
-        + uptime.getMinutes() + " minutes <br>" + uptime.getSeconds() + " seconds");
-        $('#localtime').html(localtime);
-        uptime.setSeconds(uptime.getSeconds() + 1);
-        localtime.setSeconds(localtime.getSeconds() + 1);
-
-    }, 1000)
-
-}
-
-function setRamValue(value) {
-    ramGauge.refresh(value);
-
-}
-
-function setMaxRamValue(max) {
-    ramGauge.refresh(0, max);
-    maxRam = max;
-
-}
-
-function calculateCpuUsage(cpu, cpuold) {
-    var user = cpu.times.user;;
-    var nice = cpu.times.nice;
-    var sys = cpu.times.sys;
-    var idle = cpu.times.idle;
-    var irq = cpu.times.irq;
-
-    var total = user + nice + sys + idle + irq;
-
-    //old
-
-    var user2 = cpuold.times.user;;
-    var nice2 = cpuold.times.nice;
-    var sys2 = cpuold.times.sys;
-    var idle2 = cpuold.times.idle;
-    var irq2 = cpuold.times.irq;
-
-    var total2 = user2 + nice2 + sys2 + idle2 + irq2;
-
-    var idle3 	= idle2 - idle;
-    var total3 	= total2 - total;
-    var perc	= 1 - (idle3 / total3);
-
-    return perc;
-
-}
-
-//Checks if disk exist in array
-function diskExist(drive, array) {
-    var found = false;
-    for(i = 0; i < array.length; i++) {
-        if(drive.drive === array[i].drive) {
-            found = true;
-        }
-    }
-
-    return found;
-}
+ReactDOM.render(<Monitor/>, document.getElementById("app"));
