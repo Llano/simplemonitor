@@ -93,13 +93,14 @@ var TimeDate = React.createClass({
     },
     render: function() {
         var d = new Date(this.state.uptime * 1000);
+        console.log(new Date(Date.UTC(this.props.localTime)));
 
         return (
             <div id="DateBox">
                 <div className="title">Uptime</div>
                 <div className="time">{d.toISOString().substr(11, 8)}</div>
                 <div className="title">Local Time</div>
-                <div className="time">{new Date(this.state.localTime).toISOString().substr(11, 8)}</div>
+                <div className="time">{new Date(this.state.localTime).toString().substr(16, 8)}</div>
             </div>
         );
     }
