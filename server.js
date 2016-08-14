@@ -45,7 +45,7 @@ io.sockets.on('connection', function (socket) {
 function buildFinalObject(cb) {
     var cStatus = {
         upTime: os.uptime(),
-        localTime: Math.floor(+new Date() / 1000),
+        localTime: new Date(),
         totalMem: os.totalmem(),
         cpuCount: os.cpus().length
     }

@@ -74,30 +74,32 @@ var Monitor = React.createClass({
 
 var TimeDate = React.createClass({
     getInitialState: function() {
-        return {uptime: 0, localTime: 0};
+        return {uptime: 0, localTime: new Date()};
     },
     componentDidMount: function() {
-        this.setState({uptime: this.props.uptime, localTime: this.props.localTime});
+        this.setState({uptime: this.props.uptime, localTime: new Date(this.props.localTime)});
+
         setInterval(() => {
             this.tick();
         }, 1000);
     },
     tick: function() {
+        var local = new Date(this.state.localTime);
+        local.setSeconds(local.getSeconds() + 1);
         this.setState({
             uptime: this.state.uptime + 1,
-            localTime: this.state.localTime + 1
+            localTime: local
         });
     },
     render: function() {
         var d = new Date(this.state.uptime * 1000);
-        var local = new Date(this.state.localTime * 1000);
-        local.setUTCHours(2);
+
         return (
             <div id="DateBox">
                 <div className="title">Uptime</div>
-                <div className="time">{d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()}</div>
+                <div className="time">{d.toISOString().substr(11, 8)}</div>
                 <div className="title">Local Time</div>
-                <div className="time">{local.toISOString().slice(11, 19)}</div>
+                <div className="time">{new Date(this.state.localTime).toISOString().substr(11, 8)}</div>
             </div>
         );
     }
