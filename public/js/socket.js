@@ -98,6 +98,7 @@ var TimeDate = React.createClass({
         return (
             <div id="DateBox">
                 <div className="title">Uptime</div>
+                <div className="time">{d.getDay() + " days"}</div>
                 <div className="time">{d.toISOString().substr(11, 8)}</div>
                 <div className="title">Local Time</div>
                 <div className="time">{new Date(this.state.localTime).toString().substr(16, 8)}</div>
