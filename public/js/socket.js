@@ -17,6 +17,7 @@ var Monitor = React.createClass({
         this.setState({loaded: true})
     },
     _tempStatusReceived: function(message) {
+    	console.log(message);
         if(!this.state.loaded) {
             this.connectionEstablished();
         }
