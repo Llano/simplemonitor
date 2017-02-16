@@ -147,6 +147,7 @@ var Ram = React.createClass({
     },
     render: function() {
 
+        var allocated = this.props.totalMem - this.props.freeMem;
         return (
 
             <div className="media">
@@ -161,18 +162,13 @@ var Ram = React.createClass({
                 <div className="row">
                     <div className="col-sm-4">
                         <small><i className="fa fa-fw fa-circle text-cerulean"></i> Allocated</small>
-                        <h5 className="m-b-0">5079 MB</h5>
-                        <p>31%</p>
-                    </div>
-                    <div className="col-sm-4">
-                        <small><i className="fa fa-fw fa-circle text-curious-blue"></i> In Cache</small>
-                        <h5 className="m-b-0">3789 MB</h5>
-                        <p>24%</p>
+                        <h5 className="m-b-0">{(allocated / 1014 / 1024 / 1024).toFixed(1)} GB</h5>
+                        <p>{((allocated / this.props.totalMem) * 100).toFixed(0)}%</p>
                     </div>
                     <div className="col-sm-4">
                         <small><i className="fa fa-fw fa-circle text-endaveour"></i> Available</small>
-                        <h5 className="m-b-0">3591 MB</h5>
-                        <p>46%</p>
+                        <h5 className="m-b-0">{(this.props.freeMem / 1014 / 1024 / 1024).toFixed(1)} GB</h5>
+                        <p>{((this.props.freeMem / this.props.totalMem) * 100).toFixed(0)}%</p>
                     </div>
                 </div>
             </div>

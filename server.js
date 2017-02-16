@@ -4,10 +4,10 @@ var socketio  = require('socket.io');
 var path      = require('path')
 var os        = require('os');
 var njds      = require('./custom_modules/nodejs-disks');
-var spawn     = require('child_process').spawn;
-var exec      = require('child_process').exec;
+var spawn     = require('child_process').spawn, child;
 var async     = require("async");
 
+getTemp();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -126,4 +126,19 @@ function calculateCpuUsage(cpu, cpuold, callback) {
 
     callback(perc);
 
+}
+function getTemp() {
+    console.log("heh");
+    child = spawn("powershell.exe",["-Command", "Start-Process powershell -Verb runAs", "-File", "C:\\Users\\llano\\Documents\\temp.ps1"]);
+    child.stdout.on("data",function(data){
+        console.log("Powershell Data: " + data);
+    });
+
+    child.stderr.on("data",function(data){
+    console.log("Powershell Errors: " + data);
+    });
+    child.on("exit",function(){
+        console.log("Powershell Script finished");
+    });
+    child.stdin.end();
 }
