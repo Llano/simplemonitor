@@ -129,18 +129,3 @@ function calculateCpuUsage(cpu, cpuold, callback) {
     callback(perc);
 
 }
-function getTemp() {
-    console.log("heh");
-    child = spawn("powershell.exe",["-Command", "Start-Process powershell -Verb runAs", "-File", "C:\\Users\\llano\\Documents\\temp.ps1"]);
-    child.stdout.on("data",function(data){
-        console.log("Powershell Data: " + data);
-    });
-
-    child.stderr.on("data",function(data){
-    console.log("Powershell Errors: " + data);
-    });
-    child.on("exit",function(){
-        console.log("Powershell Script finished");
-    });
-    child.stdin.end();
-}
