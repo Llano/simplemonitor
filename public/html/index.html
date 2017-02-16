@@ -1,47 +1,31 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <title>Monitor</title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/skeleton.css">
     <script src="js/raphael-2.1.4.min.js"></script>
     <script src="js/justgage.js"></script>
     <script src="js/jquery-3.0.0.min.js"></script>
-  </head>
-  <body>
-
+    <script src="https://unpkg.com/react@15.3.0/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15.3.0/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/app.min.css">
+    <link rel="stylesheet" type="text/css" href="css/lib.min.css">
+</head>
+<body>
+    <div id="header">
+    </div>
+    <div id="scdheader">
+        <span id="title">Server</span>
+    </div>
     <div class="container">
-      <div class="row">
-        <div class="four columns">
-          <header>
-          	Time &amp; date
-          </header>
-          <h4>Local Time</h4>
-          <h4 id="localtime"></h4>
-          <hr>
-           <h4>Uptime</h4>
-          <h4 id="uptime"></h4>
+        <div id="app">
         </div>
-        <div class="four columns">
-          <header>Harddrive</header>
-          <div id="harddrives"></div>
-
-
-        </div>
-        <div class="four columns">
-          <header>Performance</header>
-          <div id="ram"></div>
-          <div id="cpus">
-          </div>
-        </div>
-
-      </div>
-
     </div>
 
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/socket.js"></script>
+    <script type="text/babel" src="js/socket.js"></script>
 
-  </body>
+</body>
 </html>

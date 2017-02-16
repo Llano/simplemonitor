@@ -43,7 +43,6 @@ io.sockets.on('connection', function (socket) {
 
 
 function buildFinalObject(cb) {
-  console.log(os.uptime());
     var cStatus = {
         upTime: os.uptime(),
         localTime: new Date(),
@@ -54,6 +53,7 @@ function buildFinalObject(cb) {
     cb(cStatus);
 }
 
+var cpus = os.cpus();
 function buildTempObject(cb) {
 
     async.series({
@@ -63,12 +63,20 @@ function buildTempObject(cb) {
             });
         },
         freeMem: function(callback){
-            getMemoryUsage(function(data) {
-                callback(null, data);
-            });
+            callback(null, os.freemem());
         },
-        cores: function(callback) {
-            callback(null, os.cpus());
+        cores: function(call) {
+            var data = [];
+            async.forEachOf(os.cpus(), function(item, index, callback) {
+                calculateCpuUsage(item, cpus[index], function(perc) {
+                    data.push(perc);
+                    callback();
+                });
+            },
+            function(err) {
+                cpus = os.cpus();
+                call(null, data);
+            });
         }
     },
     function(err, results) {
@@ -93,39 +101,29 @@ function getDisks(cb) {
 
 }
 
-function getMemoryUsage(callback) {
+function calculateCpuUsage(cpu, cpuold, callback) {
+    var user = cpu.times.user;;
+    var nice = cpu.times.nice;
+    var sys = cpu.times.sys;
+    var idle = cpu.times.idle;
+    var irq = cpu.times.irq;
 
-  switch (os.platform().toLowerCase()) {
-      case'darwin':
-          break;
-      case'win32':
-          var cmd = "wmic OS get FreePhysicalMemory /Value";
-          var child = exec(
-              cmd,
-              function (err, stdout, stderr) {
-                  var freeRam = stdout.split("=");
-                  callback(freeRam[1] / 1024);
-              }
-          );
-          break;
-      case'linux':
+    var total = user + nice + sys + idle + irq;
 
-        var prc = spawn('free',  ['-m']);
+    //old
 
-        prc.stdout.setEncoding('utf8');
-        prc.stdout.on('data', function (data) {
-            var str = data.toString()
-            var lines = str.split(/\n/g);
-            for(var i = 0; i < lines.length; i++) {
-                lines[i] = lines[i].split(/\s+/);
-            }
-            callback(lines[2][3]);
-        });
-      default:
+    var user2 = cpuold.times.user;;
+    var nice2 = cpuold.times.nice;
+    var sys2 = cpuold.times.sys;
+    var idle2 = cpuold.times.idle;
+    var irq2 = cpuold.times.irq;
 
-  }
+    var total2 = user2 + nice2 + sys2 + idle2 + irq2;
 
+    var idle3 	= idle2 - idle;
+    var total3 	= total2 - total;
+    var perc	= 1 - (idle3 / total3);
 
-
+    callback(perc);
 
 }
