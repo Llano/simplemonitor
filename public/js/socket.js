@@ -11,6 +11,7 @@ var App = React.createClass({
         this.setState({name: message.name, uptime: message.upTime, totalMem: message.totalMem, localTime: message.localTime})
     },
 	render: function() {
+		console.log(this.state.totalMem);
 		return (
 			<div>
 				<Header/>
@@ -40,7 +41,7 @@ var Monitor = React.createClass({
         this.state.socket.on('tmpstatus', this._tempStatusReceived);
     },
     connectionEstablished: function() {
-        this.setState({loaded: true})
+        this.setState({loaded: true, totalMem: this.props.totalmem});
     },
     _tempStatusReceived: function(message) {
         if(!this.state.loaded) {
@@ -50,9 +51,11 @@ var Monitor = React.createClass({
     },
     render: function() {
 		console.log("rendering Monitor");
+		console.log(this.props.totalmem+" vs "+this.state.totalMem);
         var cpu, ram, date, drives;
         if(this.state.cpus != null)
         {
+			console.log(this.state.totalMem);
             cpu = <Cpu cores={this.state.cpus}/>;
             ram = <Ram totalMem={this.state.totalMem} freeMem={this.state.freeMem}/>
             date = <TimeDate uptime={this.state.uptime} localTime={this.state.localTime}/>;
