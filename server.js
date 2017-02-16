@@ -11,8 +11,9 @@ var async     = require("async");
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var server = app.listen(3000, function(){
-    console.log('listening on *:3000');
+var port = 3000;
+var server = app.listen(port, function(){
+    console.log('listening on *:'+port);
 });
 var io        = require('socket.io').listen(server);
 
@@ -44,6 +45,7 @@ io.sockets.on('connection', function (socket) {
 
 function buildFinalObject(cb) {
     var cStatus = {
+        name: os.hostname(),
         upTime: os.uptime(),
         localTime: new Date(),
         totalMem: os.totalmem(),

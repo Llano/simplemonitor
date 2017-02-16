@@ -1,6 +1,6 @@
 {
   "name": "simplemonitor",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Monitor server performance",
   "private": true,
   "dependencies": {
