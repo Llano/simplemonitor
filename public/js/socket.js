@@ -1,32 +1,61 @@
+var App = React.createClass({
+	getInitialState: function() {
+		return {socket: null, name: "Server", uptime: 0, totalMem: 0, localTime: null};
+	},
+	componentWillMount: function() {
+		var socket = io.connect();
+		this.setState({socket: socket});
+        socket.on('finalstatus', this._finalStatusReceived);
+	},
+	_finalStatusReceived: function(message) {
+        this.setState({name: message.name, uptime: message.upTime, totalMem: message.totalMem, localTime: message.localTime})
+    },
+	render: function() {
+		console.log(this.state.totalMem);
+		return (
+			<div>
+				<Header/>
+				<Scdheader name={this.state.name}/>
+				<Monitor uptime={this.state.uptime} totalmem={this.state.totalMem} localtime={this.state.localTime} socket={this.state.socket}/>
+			</div>
+		);
+	}
+});
+var Header = React.createClass({
+	render: function() {
+		console.log("rendering Header");
+		return (<div id="header"></div>);
+	}
+});
+var Scdheader = React.createClass({
+	render: function() {
+		console.log("rendering Scdheader");
+		return (<div id="scdheader"><span id="title">{this.props.name}</span></div>);
+	}
+});
 var Monitor = React.createClass({
     getInitialState: function() {
-        return {uptime: 0, totalMem: 0, freeMem: 0, cpus: null, drives: null, localTime: null, loaded: false};
+        return {socket: this.props.socket, uptime: this.props.uptime, totalMem: this.props.totalmem, freeMem: 0, cpus: null, drives: null, localTime: this.props.localtime, loaded: false};
     },
     componentWillMount: function() {
-        var socket = io.connect()
-        socket.on('finalstatus', this._finalStatusReceived);
-        socket.on('tmpstatus', this._tempStatusReceived);
-    },
-    componentDidMount: function() {
-
-    },
-    _finalStatusReceived: function(message) {
-        this.setState({uptime: message.upTime, totalMem: message.totalMem, localTime: message.localTime})
+        this.state.socket.on('tmpstatus', this._tempStatusReceived);
     },
     connectionEstablished: function() {
-        this.setState({loaded: true})
+        this.setState({loaded: true, totalMem: this.props.totalmem});
     },
     _tempStatusReceived: function(message) {
-    	console.log(message);
         if(!this.state.loaded) {
             this.connectionEstablished();
         }
         this.setState({freeMem: message.freeMem, cpus: message.cores, drives: message.disks})
     },
     render: function() {
+		console.log("rendering Monitor");
+		console.log(this.props.totalmem+" vs "+this.state.totalMem);
         var cpu, ram, date, drives;
         if(this.state.cpus != null)
         {
+			console.log(this.state.totalMem);
             cpu = <Cpu cores={this.state.cpus}/>;
             ram = <Ram totalMem={this.state.totalMem} freeMem={this.state.freeMem}/>
             date = <TimeDate uptime={this.state.uptime} localTime={this.state.localTime}/>;
@@ -41,7 +70,7 @@ var Monitor = React.createClass({
             return (
 
 
-                <div>
+                <div className="container">
                     <div className="row m-t-2">
                         <div className="col-lg-4">
                             <div className="row">
@@ -142,9 +171,6 @@ var Ram = React.createClass({
     getInitialState: function() {
         return {};
     },
-    componentDidMount: function() {
-
-    },
     render: function() {
 
         var allocated = this.props.totalMem - this.props.freeMem;
@@ -180,11 +206,6 @@ var Ram = React.createClass({
 var Cpu = React.createClass({
     getInitialState: function() {
         return {};
-    },
-    componentDidMount: function() {
-
-
-
     },
     render: function() {
         return (
@@ -237,4 +258,4 @@ var Drives = React.createClass({
     }
 });
 
-ReactDOM.render(<Monitor/>, document.getElementById("app"));
+ReactDOM.render(<App/>, document.getElementById("root"));
