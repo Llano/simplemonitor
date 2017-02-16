@@ -7,7 +7,6 @@ var njds      = require('./custom_modules/nodejs-disks');
 var spawn     = require('child_process').spawn, child;
 var async     = require("async");
 
-getTemp();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
