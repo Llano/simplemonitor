@@ -6,6 +6,7 @@ var os        = require('os');
 var njds      = require('./custom_modules/nodejs-disks');
 var spawn     = require('child_process').spawn, child;
 var async     = require("async");
+var cpu      = require('./custom_modules/cpu-temp');
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -13,6 +14,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 var port = 3000;
 var server = app.listen(port, function(){
     console.log('listening on *:'+port);
+    cpu.getCpuTemp(function(temp) {
+        console.log(temp);
+    })
 });
 var io        = require('socket.io').listen(server);
 

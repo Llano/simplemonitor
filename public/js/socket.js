@@ -96,6 +96,36 @@ var Monitor = React.createClass({
 
                                     </div>
                                 </div>
+
+
+
+
+
+
+
+
+								<div className="col-lg-12 col-sm-6">
+                                    <div className="panel panel-default bg-gray-dark b-a-0">
+                                        <div className="panel-heading"> System Temperatures </div>
+
+                                            <ul className="list-group">
+                                                <li className="list-group-item no-bg">
+                                                    <h5>CPU</h5>
+                                                    <CpuTemp />
+
+                                                </li>
+                                            </ul>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
                             </div>
                         </div>
                         <div className="col-lg-8">
@@ -179,7 +209,7 @@ var Ram = React.createClass({
             <div className="media">
                 <div className="media-left">
                     <p className="data-attributes media-object">
-                        <span data-peity="{ &quot;fill&quot;: [&quot;#08A5E1&quot;, &quot;#2A88C5&quot;, &quot;#0058A1&quot;],  &quot;innerRadius&quot;: 18, &quot;radius&quot;: 28 }" ></span><svg className="peity" height="56" width="56"><path d="M 28 0 A 28 28 0 0 1 52.24871130596428 14 L 43.588457268119896 19 A 18 18 0 0 0 28 10" fill="#08A5E1"></path><path d="M 52.24871130596428 14 A 28 28 0 0 1 28 56 L 28 46 A 18 18 0 0 0 43.588457268119896 19" fill="#2A88C5"></path><path d="M 28 56 A 28 28 0 0 1 27.999999999999996 0 L 27.999999999999996 10 A 18 18 0 0 0 28 46" fill="#0058A1"></path></svg>
+                        <span  ></span><svg className="peity" height="56" width="56"><path d="M 28 0 A 28 28 0 0 1 52.24871130596428 14 L 43.588457268119896 19 A 18 18 0 0 0 28 10" fill="#08A5E1"></path><path d="M 52.24871130596428 14 A 28 28 0 0 1 28 56 L 28 46 A 18 18 0 0 0 43.588457268119896 19" fill="#2A88C5"></path><path d="M 28 56 A 28 28 0 0 1 27.999999999999996 0 L 27.999999999999996 10 A 18 18 0 0 0 28 46" fill="#0058A1"></path></svg>
                     </p>
                 </div>
                 <div className="media-body media-top">
@@ -258,4 +288,11 @@ var Drives = React.createClass({
     }
 });
 
+var CpuTemp = React.createClass({
+	render: function() {
+		return (
+			null
+		)
+	}
+})
 ReactDOM.render(<App/>, document.getElementById("root"));
