@@ -248,7 +248,7 @@ var Cpu = React.createClass({
                             <div className="col-sm-6">Core {i + 1} @ <span className="text-white"> {(this.props.cores[i] * 100).toFixed(1)}%</span></div>
                             <div className="col-sm-6">
                                 <div className="progress m-t-1  b-r-a-0 h-3">
-                                    <div className="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style={{width: parseFloat((this.props.cores[i] * 100).toFixed(1))}}>
+                                    <div className="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style={{width: parseFloat((this.props.cores[i] * 100).toFixed(1)) + "%"}}>
                                         <span className="sr-only">60% Complete</span>
                                     </div>
                                 </div>
