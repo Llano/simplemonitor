@@ -12,7 +12,7 @@ function getCpuTemp(callback) {
              });
             break;
         case 'Linux':
-            exec("custom_modules/cpu-temp/sensors | grep '^Core\\s[[:digit:]]\\+:' | awk '{print int($3)}'", function(error, stdout, stderr) {
+            exec("custom_modules/cpu-temp/sensors | grep -iE 'core.*°' | awk '{print int($3)}'", function(error, stdout, stderr) {
               console.log(stdout);
                 var cpus = stdout.split("\n");
                 var arr = [];
