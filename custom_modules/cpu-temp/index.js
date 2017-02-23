@@ -26,7 +26,8 @@ function getCpuTemp(callback) {
 					obj.temp[count++] = rows[j].split(": ")[1];
 				}
 			}
-			arr[i] = obj;
+			if(obj.temp.length > 0)
+				arr[i] = obj;
                 }
                 callback(JSON.stringify(arr));
             });
