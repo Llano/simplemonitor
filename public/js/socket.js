@@ -11,7 +11,6 @@ var App = React.createClass({
         this.setState({name: message.name, uptime: message.upTime, totalMem: message.totalMem, localTime: message.localTime})
     },
 	render: function() {
-		console.log(this.state.totalMem);
 		return (
 			<div>
 				<Header/>
@@ -35,7 +34,7 @@ var Scdheader = React.createClass({
 });
 var Monitor = React.createClass({
     getInitialState: function() {
-        return {socket: this.props.socket, uptime: this.props.uptime, totalMem: this.props.totalmem, freeMem: 0, cpus: null, drives: null, localTime: this.props.localtime, loaded: false};
+        return {socket: this.props.socket, uptime: this.props.uptime, totalMem: this.props.totalmem, freeMem: 0, cpus: null, drives: null, temp: null, localTime: this.props.localtime, loaded: false};
     },
     componentWillMount: function() {
         this.state.socket.on('tmpstatus', this._tempStatusReceived);
@@ -47,20 +46,18 @@ var Monitor = React.createClass({
         if(!this.state.loaded) {
             this.connectionEstablished();
         }
-        this.setState({freeMem: message.freeMem, cpus: message.cores, drives: message.disks})
+        this.setState({freeMem: message.freeMem, cpus: message.cores, drives: message.disks, temp: message.temp})
     },
     render: function() {
 		console.log("rendering Monitor");
-		console.log(this.props.totalmem+" vs "+this.state.totalMem);
-        var cpu, ram, date, drives;
+        var cpu, ram, date, drives, cputemp;
         if(this.state.cpus != null)
         {
-			console.log(this.state.totalMem);
             cpu = <Cpu cores={this.state.cpus}/>;
             ram = <Ram totalMem={this.state.totalMem} freeMem={this.state.freeMem}/>
             date = <TimeDate uptime={this.state.uptime} localTime={this.state.localTime}/>;
             drives = <Drives drives={this.state.drives}/>
-
+			cputemp = <CpuTemp temp={this.state.temp}/>
         }
 
         if(this.state.loaded)
@@ -110,9 +107,7 @@ var Monitor = React.createClass({
 
                                             <ul className="list-group">
                                                 <li className="list-group-item no-bg">
-                                                    <h5>CPU</h5>
-                                                    <CpuTemp />
-
+                                                    {cputemp}
                                                 </li>
                                             </ul>
 
@@ -291,8 +286,30 @@ var Drives = React.createClass({
 var CpuTemp = React.createClass({
 	render: function() {
 		return (
-			null
+			<div>
+			{
+				this.props.temp.map((obj, i) => {
+					return (
+						<div key={i}>
+							<AdapterTemp name={obj.name} temp={obj.temp} />
+						</div>
+					);
+				})
+			}
+			</div>
 		)
 	}
-})
+});
+
+var AdapterTemp = React.createClass({
+        render: function() {
+                return (
+                        <div>
+				<h5>{this.props.name}</h5>
+				{this.props.temp.map((temp, i) => {return <div key={i}>Temp {i+1} @ <span className="text-white">{parseInt(temp)}°C</span></div>})}
+                        </div>
+                )
+        }
+});
+
 ReactDOM.render(<App/>, document.getElementById("root"));

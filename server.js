@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 var port = 3000;
 var server = app.listen(port, function(){
     console.log('listening on *:'+port);
-    cpu.getCpuTemp(function(temp) {
+	cpu.getCpuTemp(function(temp) {
         console.log(temp);
     })
 });
@@ -82,7 +82,12 @@ function buildTempObject(cb) {
                 cpus = os.cpus();
                 call(null, data);
             });
-        }
+        },
+		temp: function(call) {
+			cpu.getCpuTemp(function(temp) {
+				call(null, JSON.parse(temp));
+			});
+		}
     },
     function(err, results) {
         cb(results)

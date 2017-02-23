@@ -12,13 +12,22 @@ function getCpuTemp(callback) {
              });
             break;
         case 'Linux':
-            exec("custom_modules/cpu-temp/sensors | grep '^Core\\s[[:digit:]]\\+:' | awk '{print int($3)}'", function(error, stdout, stderr) {
-              console.log(stdout);
-                var cpus = stdout.split("\n");
+            exec("custom_modules/cpu-temp/sensors -u", function(error, stdout, stderr) {
+                var cpus = stdout.split("\n\n");
                 var arr = [];
                 for (var i = 0; i < cpus.length - 1; i++) {
-                  if(cpus[i] != "\n")
-                    arr[i] = cpus[i];
+			var rows = cpus[i].split("\n");
+			var obj = {};
+			var count = 0;
+			obj.name = rows[0]
+			obj.temp = [];
+			for(var j=1; j<rows.length; j++){
+				if(rows[j].includes("_input")){
+					obj.temp[count++] = rows[j].split(": ")[1];
+				}
+			}
+			if(obj.temp.length > 0)
+				arr[i] = obj;
                 }
                 callback(JSON.stringify(arr));
             });
