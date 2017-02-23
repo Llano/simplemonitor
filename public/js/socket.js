@@ -107,7 +107,6 @@ var Monitor = React.createClass({
 
                                             <ul className="list-group">
                                                 <li className="list-group-item no-bg">
-                                                    <h5>CPU</h5>
                                                     {cputemp}
                                                 </li>
                                             </ul>
@@ -289,10 +288,10 @@ var CpuTemp = React.createClass({
 		return (
 			<div>
 			{
-				this.props.temp.map((temp, i) => {
+				this.props.temp.map((obj, i) => {
 					return (
 						<div key={i}>
-							Core {i+1} @ <span className="text-white">{temp}°C</span>
+							<AdapterTemp name={obj.name} temp={obj.temp} />
 						</div>
 					);
 				})
@@ -300,5 +299,16 @@ var CpuTemp = React.createClass({
 			</div>
 		)
 	}
-})
+});
+
+var AdapterTemp = React.createClass({
+        render: function() {
+                return (
+                        <div>
+				<h5>{this.props.name}</h5>
+                        </div>
+                )
+        }
+});
+
 ReactDOM.render(<App/>, document.getElementById("root"));

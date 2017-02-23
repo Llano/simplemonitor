@@ -14,6 +14,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 var port = 3000;
 var server = app.listen(port, function(){
     console.log('listening on *:'+port);
+	cpu.getCpuTemp(function(temp) {
+        console.log(temp);
+    })
 });
 var io        = require('socket.io').listen(server);
 
