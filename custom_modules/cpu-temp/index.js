@@ -22,7 +22,7 @@ function getCpuTemp(callback) {
 			obj.name = rows[0]
 			obj.temp = [];
 			for(var j=1; j<rows.length; j++){
-				if(rows[j].includes("_input")){
+				if(rows[j].indexOf("_input") != -1){
 					obj.temp[count++] = rows[j].split(": ")[1];
 				}
 			}
