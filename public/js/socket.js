@@ -306,6 +306,7 @@ var AdapterTemp = React.createClass({
                 return (
                         <div>
 				<h5>{this.props.name}</h5>
+				{this.props.temp.map((temp, i) => {return <div key={i}>Temp {i+1} @ <span className="text-white">{parseInt(temp)}°C</span></div>})}
                         </div>
                 )
         }
